@@ -98,8 +98,8 @@ function module.new()
 	local Frame = Instance.new("Frame")
 	Frame.BackgroundTransparency = 1
 	Frame.ClipsDescendants = true
-	Frame.Size = UDim2.new(1,-20,0,30)
-	Frame.Position = UDim2.new(0,10,0,23)
+	Frame.Size = UDim2.new(0,200,0,50)
+	Frame.Position = UDim2.new(0,0,0,0)
 
 	local Layout = Instance.new("UIListLayout")
 	Layout.SortOrder = Enum.SortOrder.LayoutOrder
