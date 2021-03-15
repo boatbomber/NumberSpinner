@@ -4,6 +4,7 @@ local TweenService = game:GetService('TweenService')
 local module = {}
 
 local typeProtection = {
+	Frame = "__read-only__";
 	Prefix = "string";
 	Value = "number";
 	Decimals = "number";
