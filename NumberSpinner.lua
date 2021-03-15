@@ -71,7 +71,8 @@ local function createDigit(layoutOrder, initialValues)
 
 		Width = TextService:GetTextSize("1", digit.TextSize, digit.Font, Vector2.new(digit.TextSize,digit.TextSize)).X
 
-		for i,n in ipairs(digit.Numbers) do
+		for i=0,9 do
+			local n = digit.Numbers[i]
 			n.TextSize = digit.TextSize
 			n.TextColor3 = digit.TextColor3
 			n.Font = digit.Font
