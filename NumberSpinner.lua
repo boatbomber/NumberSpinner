@@ -38,20 +38,26 @@ local function createDigit(layoutOrder, initialValues)
 		TextSize = initialValues.TextSize or 25;
 		TextColor3 = initialValues.TextColor3 or Color3.new(1,1,1);
 		Numbers = table.create(10);
+		CanvasTweens = table.create(10);
 		_Destroyed = false;
 	}
 
 	function digit:Destroy()
 		digit._Destroyed = true
-		Frame:TweenSize(UDim2.new(0,0,1,0), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, digit.Duration*0.8, true, function()
+		local t = TweenService:Create(Frame, TweenInfo.new(digit.Duration*0.8), {Size = UDim2.new(0,0,1,0)})
+		t.Completed:Connect(function()
 			Frame:Destroy()
 			table.clear(digit)
+			t:Destroy()
 		end)
+		t:Play()
 	end
 
 	local Width = TextService:GetTextSize("1", digit.TextSize, digit.Font, Vector2.new(digit.TextSize,digit.TextSize)).X
 	TweenService:Create(Frame, TweenInfo.new(digit.Duration), {Size = UDim2.new(0,Width,1,0)}):Play()
 	Canvas.Position = UDim2.new(0,0,-digit.Value,0)
+
+	local tweenInfo = TweenInfo.new(digit.Duration)
 
 	for i=0,9 do
 		local n = Instance.new("TextLabel")
@@ -65,28 +71,50 @@ local function createDigit(layoutOrder, initialValues)
 		n.Position = UDim2.new(0,0,i*0.1,0)
 		n.Parent = Canvas
 		digit.Numbers[i] = n
+		digit.CanvasTweens[i] = TweenService:Create(Canvas, tweenInfo, {Position = UDim2.new(0,0,-i,0)})
 	end
 
-	local function Update()
+
+	local function Update(Type, newValue)
 		if digit._Destroyed then return end
 
-		Width = TextService:GetTextSize("1", digit.TextSize, digit.Font, Vector2.new(digit.TextSize,digit.TextSize)).X
-
-		for i,n in ipairs(digit.Numbers) do
-			n.TextSize = digit.TextSize
-			n.TextColor3 = digit.TextColor3
-			n.Font = digit.Font
+		if Type == "Font" then
+			Width = TextService:GetTextSize("1", digit.TextSize, newValue, Vector2.new(digit.TextSize,digit.TextSize)).X
+			TweenService:Create(Frame, TweenInfo.new(0.1), {Size = UDim2.new(0,Width,1,0)}):Play()
+			for i=0,9 do
+				local n = digit.Numbers[i]
+				n.Font = newValue
+			end
+		elseif Type == "TextSize" then
+			for i=0,9 do
+				local n = digit.Numbers[i]
+				n.TextSize = newValue
+			end
+			Width = TextService:GetTextSize("1", newValue, digit.Font, Vector2.new(newValue,newValue)).X
+			TweenService:Create(Frame, TweenInfo.new(0.1), {Size = UDim2.new(0,Width,1,0)}):Play()
+		elseif Type == "TextColor3" then
+			for i=0,9 do
+				local n = digit.Numbers[i]
+				n.TextColor3 = newValue
+			end
+		elseif Type == "Duration" then
+			tweenInfo = TweenInfo.new(digit.Duration)
+			for i=0,9 do
+				digit.CanvasTweens[i] = TweenService:Create(Canvas, tweenInfo, {Position = UDim2.new(0,0,-i,0)})
+			end
+		elseif Type == "Value" then
+			digit.CanvasTweens[newValue]:Play()
 		end
 
-		Frame.Size = UDim2.new(0,Width,1,0)
-		TweenService:Create(Canvas, TweenInfo.new(digit.Duration), {Position = UDim2.new(0,0,-digit.Value,0)}):Play()
 	end
 
 	local digitProxy = setmetatable({}, {
 		__index = digit;
 		__newindex = function(_,key,value)
-			digit[key] = value
-			Update()
+			if digit[key] ~= value then
+				digit[key] = value
+				Update(key,value)
+			end
 		end;
 	})
 
@@ -104,7 +132,7 @@ function module.new()
 	local Layout = Instance.new("UIListLayout")
 	Layout.SortOrder = Enum.SortOrder.LayoutOrder
 	Layout.FillDirection = Enum.FillDirection.Horizontal
-	Layout.HorizontalAlignment = Enum.HorizontalAlignment.Left
+	Layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 	Layout.Parent = Frame
 
 	local spinner = {}
@@ -149,7 +177,6 @@ function module.new()
 
 	function spinner:Update()
 		Frame.Visible = spinner.Visible
-		Frame.Size = UDim2.new(1,-20,0,spinner.TextSize+4)
 
 		Prefix.Size = UDim2.new(
 			0,TextService:GetTextSize(spinner.Prefix, spinner.TextSize, spinner.Font, Vector2.new(spinner.TextSize,spinner.TextSize)).X,
@@ -168,7 +195,7 @@ function module.new()
 		Decimal.TextSize = spinner.TextSize
 		Decimal.TextColor3 = spinner.TextColor3
 
-		local TextValue = string.format("%."..spinner.Decimals.."f",spinner.Value)
+		local TextValue = spinner.Decimals > 0 and string.format("%."..spinner.Decimals.."f",spinner.Value) or string.format("%d",spinner.Value)
 		local split = string.split(TextValue, ".")
 		local whole,decimal = split[1],split[2]
 		if not whole then return end
@@ -199,32 +226,41 @@ function module.new()
 			if d then d:Destroy(); WholeDigits[i] = nil; end
 		end
 
+		if decimal then
+			Decimal.Visible = true
+			for i=1,#decimal do
+				local d = DecimalDigits[i]
 
-		for i=1,#decimal do
-			local d = DecimalDigits[i]
-
-			if d then
-				d.Font = spinner.Font;
-				d.TextSize = spinner.TextSize;
-				d.TextColor = spinner.TextColor3;
-				d.Duration = spinner.Duration;
-				d.Value = tonumber(string.sub(decimal,i,i))
-			else
-				d = createDigit(i+500, {
-					Value = tonumber(string.sub(decimal,i,i));
-					Font = spinner.Font;
-					TextSize = spinner.TextSize;
-					TextColor = spinner.TextColor3;
-					Duration = spinner.Duration;
-				})
-				d.Frame.Parent = Frame
-				DecimalDigits[i] = d
+				if d then
+					d.Font = spinner.Font;
+					d.TextSize = spinner.TextSize;
+					d.TextColor = spinner.TextColor3;
+					d.Duration = spinner.Duration;
+					d.Value = tonumber(string.sub(decimal,i,i))
+				else
+					d = createDigit(i+500, {
+						Value = tonumber(string.sub(decimal,i,i));
+						Font = spinner.Font;
+						TextSize = spinner.TextSize;
+						TextColor = spinner.TextColor3;
+						Duration = spinner.Duration;
+					})
+					d.Frame.Parent = Frame
+					DecimalDigits[i] = d
+				end
 			end
+			for i=#decimal+1,#DecimalDigits do
+				local d = DecimalDigits[i]
+				if d then d:Destroy(); DecimalDigits[i] = nil; end
+			end
+		else
+			Decimal.Visible = false
+			for _,d in ipairs(DecimalDigits) do
+				d:Destroy()
+			end
+			table.clear(DecimalDigits)
 		end
-		for i=#decimal+1,#DecimalDigits do
-			local d = DecimalDigits[i]
-			if d then d:Destroy(); DecimalDigits[i] = nil; end
-		end
+
 
 	end
 
