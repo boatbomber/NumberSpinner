@@ -126,7 +126,7 @@ local function newSpinner()
 					return
 				end
 				Spinner[key] = value
-				Spinner:Update()
+				Spinner:Update(key,value)
 				return
 			end
 		end;
@@ -137,7 +137,15 @@ local function newSpinner()
 		table.clear(self)
 	end
 
-	function Spinner:Update()
+	function Spinner:Update(Type, Value)
+		if Type == "Prefix" then
+			Spinner.PrefixLabel.Text = Spinner.Prefix
+			return
+		elseif Type == "Suffix" then
+			Spinner.SuffixLabel.Text = Spinner.Suffix
+			return
+		end
+
 		local AbsValue = math.abs(Spinner.Value)
 		local isNegative = Spinner.Value < 0
 
