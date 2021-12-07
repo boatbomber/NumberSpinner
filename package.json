@@ -1,6 +1,6 @@
 {
   "name": "@rbxts/number-spinner",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Typings for BoatBomber's NumberSpinner",
   "main": "NumberSpinner/index.d.ts",
   "types": "out/index.d.ts",
