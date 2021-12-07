@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/FirstVertex/NumberSpinner"
+    "url": "https://github.com/boatbomber/NumberSpinner"
   },
   "keywords": [
     "NumberSpinner",
@@ -20,11 +20,12 @@
     "Spinner",
     "Typescript",
     "BoatBomber",
+    "FirstVertex",
     "Lua"
   ],
-  "author": "Typings by Hugh Anderson a.k.a. FirstVertex",
+  "author": "boatbomber with Typings by FirstVertex",
   "license": "MIT",
-  "homepage": "https://github.com/FirstVertex/NumberSpinner",
+  "homepage": "https://github.com/boatbomber/NumberSpinner",
   "publishConfig": {
     "access": "public"
   },
