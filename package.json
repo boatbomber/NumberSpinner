@@ -1,0 +1,36 @@
+{
+  "name": "@rbxts/number-spinner",
+  "version": "2.0.0",
+  "description": "Typings for BoatBomber's NumberSpinner",
+  "main": "NumberSpinner/index.d.ts",
+  "types": "out/index.d.ts",
+  "scripts": {
+    "build": "rbxtsc --verbose",
+    "patch": "npm version patch",
+    "publish": "npm publish",
+    "test": "npm pack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/FirstVertex/NumberSpinner"
+  },
+  "keywords": [
+    "NumberSpinner",
+    "Number",
+    "Spinner",
+    "Typescript",
+    "BoatBomber",
+    "Lua"
+  ],
+  "author": "Typings by Hugh Anderson a.k.a. FirstVertex",
+  "license": "MIT",
+  "homepage": "https://github.com/FirstVertex/NumberSpinner",
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@rbxts/compiler-types": "^1.2.7-types.1",
+    "@rbxts/types": "^1.0.553",
+    "typescript": "^4.5.2"
+  }
+}

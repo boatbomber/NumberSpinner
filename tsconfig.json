@@ -1,0 +1,20 @@
+{
+	"compilerOptions": {
+		// required
+		"allowSyntheticDefaultImports": true,
+		"downlevelIteration": true,
+		"module": "commonjs",
+		"moduleResolution": "Node",
+		"noLib": true,
+		"resolveJsonModule": true,
+		"strict": true,
+		"target": "ESNext",
+		"typeRoots": ["node_modules/@rbxts"],
+
+		// configurable
+		"rootDir": "NumberSpinner",
+		"outDir": "out",
+		"baseUrl": "NumberSpinner",
+		"declaration": true,
+	}
+}
