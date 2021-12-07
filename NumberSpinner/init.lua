@@ -148,6 +148,7 @@ local function newSpinner()
 
 		local AbsValue = math.abs(Spinner.Value)
 		local isNegative = Spinner.Value < 0
+		local modifyDuration = Type == "Duration"
 
 		if Spinner.NegativeLabel then
 			Spinner.NegativeLabel.Visible = isNegative
@@ -163,7 +164,9 @@ local function newSpinner()
 			local d = Spinner.Digits.Whole[i]
 
 			if d then
-				d.Duration = Spinner.Duration;
+				if (modifyDuration) then
+					d.Duration = Spinner.Duration;
+				end
 				d.Value = tonumber(string.sub(whole,i,i))
 			else
 				d = DigitModule.new(SpinnerProxy, (i*2)-900, tonumber(string.sub(whole,i,i)))
@@ -225,7 +228,9 @@ local function newSpinner()
 			local d = Spinner.Digits.Decimal[i]
 
 			if d then
-				d.Duration = Spinner.Duration;
+				if (modifyDuration) then
+					d.Duration = Spinner.Duration;
+				end
 				d.Value = tonumber(string.sub(decimal,i,i))
 			else
 				d = DigitModule.new(SpinnerProxy, i, tonumber(string.sub(decimal,i,i)))
