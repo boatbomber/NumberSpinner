@@ -1,7 +1,7 @@
 local TextService = game:GetService('TextService')
 local TweenService = game:GetService('TweenService')
 
-local sizeTweenInfo = TweenInfo.new(0.15)
+local sizeTweenInfo = TweenInfo.new(0.15, Enum.EasingStyle.Elastic)
 
 local Digit = {}
 
@@ -13,7 +13,7 @@ function Digit.new(Spinner, LayoutOrder, Value)
 		Labels = table.create(10);
 		CanvasTweens = table.create(10);
 	}
-	local tweenInfo = TweenInfo.new(Spinner.Duration)
+	local tweenInfo = TweenInfo.new(Spinner.Duration, Enum.EasingStyle.Bounce)
 
 	local Frame = Instance.new("Frame")
 	Frame.Name = "digit"
@@ -36,7 +36,7 @@ function Digit.new(Spinner, LayoutOrder, Value)
 		n.BackgroundTransparency = 1
 		n.TextSize = Spinner.TextSize
 		n.TextColor3 = Spinner.TextColor3
-		n.Font = Spinner.Font
+		n.FontFace = Spinner.FontFace
 		n.Text = i
 		n.Size = UDim2.new(1,0,0.1,0)
 		n.Position = UDim2.new(0,0,i*0.1,0)
@@ -47,8 +47,25 @@ function Digit.new(Spinner, LayoutOrder, Value)
 
 	Frame.Parent = Spinner.Frame
 
-	local Size = TextService:GetTextSize("8", Spinner.TextSize, Spinner.Font, Vector2.new(Spinner.TextSize,Spinner.TextSize))
-	TweenService:Create(Frame, sizeTweenInfo, {Size = UDim2.new(0,Size.X+1,0,Size.Y+10)}):Play()
+	local TextBoundsParams = Instance.new("GetTextBoundsParams")
+	local Size = Vector2.zero
+	
+	local function getTextBoundsSafely()
+		TextBoundsParams.Text = "8"
+		TextBoundsParams.Font = Spinner.FontFace
+		TextBoundsParams.Size = Spinner.TextSize
+		TextBoundsParams.Width = Spinner.TextSize
+
+		local success, result = pcall(TextService.GetTextBoundsAsync, TextService, TextBoundsParams) -- Errors like "Temp read failed." can occur for some circumstances. 
+		if success then
+			Size = result
+		end
+	end
+	
+	task.spawn(function() -- Digit is a proxy metatable, which means metamethods are called, if getTextBoundsSafely function is called in a metamethod, a overflow error will occur as GetTextBoundsAsync is an await function, not expected in a metamethod. Wrapping it in a new thread should help.
+		getTextBoundsSafely()
+		TweenService:Create(Frame, sizeTweenInfo, {Size = UDim2.new(0,Size.X+1,0,Size.Y+10)}):Play()
+	end)
 
 	local dProxy = setmetatable({},{
 		__index = function(_,key)
@@ -81,19 +98,21 @@ function Digit.new(Spinner, LayoutOrder, Value)
 	})
 
 	function d:Destroy()
-		local Size = TextService:GetTextSize("8", Spinner.TextSize, Spinner.Font, Vector2.new(Spinner.TextSize,Spinner.TextSize))
-		local shrinkTween = TweenService:Create(Frame, sizeTweenInfo, {Size = UDim2.new(0,0,0,Size.Y+10)})
-		shrinkTween.Completed:Connect(function()
-			Frame:Destroy()
-			table.clear(d)
-			shrinkTween:Destroy()
+		task.spawn(function()
+			getTextBoundsSafely()
+			local shrinkTween = TweenService:Create(Frame, sizeTweenInfo, {Size = UDim2.new(0,0,0,Size.Y+10)})
+			shrinkTween.Completed:Connect(function()
+				Frame:Destroy()
+				table.clear(d)
+				shrinkTween:Destroy()
+			end)
+			shrinkTween:Play()
 		end)
-		shrinkTween:Play()
 	end
 
 	function d:Update(Type,Value)
 		if Type == "Duration" then
-			tweenInfo = TweenInfo.new(Value)
+			tweenInfo = TweenInfo.new(Value, Enum.EasingStyle.Bounce)
 			for i=0,9 do
 				d.CanvasTweens[i] = TweenService:Create(Canvas, tweenInfo, {Position = UDim2.new(0,0,-i,0)})
 			end
@@ -101,10 +120,11 @@ function Digit.new(Spinner, LayoutOrder, Value)
 		elseif Type == "Value" then
 			d.CanvasTweens[Value]:Play()
 
-		elseif Type == "TextSize" or Type == "Font" then
-			local Size = TextService:GetTextSize("8", Spinner.TextSize, Spinner.Font, Vector2.new(Spinner.TextSize,Spinner.TextSize))
-			TweenService:Create(Frame, sizeTweenInfo, {Size = UDim2.new(0,Size.X+1,0,Size.Y+10)}):Play()
-
+		elseif Type == "TextSize" or Type == "FontFace" then
+			task.spawn(function()
+				getTextBoundsSafely()
+				TweenService:Create(Frame, sizeTweenInfo, {Size = UDim2.new(0,Size.X+1,0,Size.Y+10)}):Play()
+			end)
 		end
 	end
 
