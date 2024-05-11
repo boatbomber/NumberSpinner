@@ -28,7 +28,7 @@ local DUMMY_FRAME = Instance.new("Frame")
 local DUMMY_LABEL = Instance.new("TextLabel")
 DUMMY_LABEL.TextSize = 25
 DUMMY_LABEL.TextColor3 = Color3.fromRGB(250,250,255)
-DUMMY_LABEL.Font = Enum.Font.SourceSans
+DUMMY_LABEL.FontFace = Font.new("SourceSans")
 
 local function newSpinner()
 	local Spinner = {
@@ -188,7 +188,7 @@ local function newSpinner()
 					CommaLabel.Name = "Comma"
 					CommaLabel.BackgroundTransparency = 1
 					CommaLabel.Size = UDim2.new(0,0,1,0)
-					CommaLabel.Font = SpinnerProxy.Font
+					CommaLabel.FontFace = SpinnerProxy.FontFace
 					CommaLabel.TextSize = SpinnerProxy.TextSize
 					CommaLabel.TextColor3 = SpinnerProxy.TextColor3
 					CommaLabel.Text = ","
@@ -265,7 +265,7 @@ function NumberSpinner.new()
 	Prefix.LayoutOrder = -1000
 	Prefix.BackgroundTransparency = 1
 	Prefix.Size = UDim2.new(0,0,1,0)
-	Prefix.Font = Spinner.Font
+	Prefix.FontFace = Spinner.FontFace
 	Prefix.TextSize = Spinner.TextSize
 	Prefix.TextColor3 = Spinner.TextColor3
 	Prefix.Text = Spinner.Prefix
@@ -277,7 +277,7 @@ function NumberSpinner.new()
 	Suffix.LayoutOrder = 1000
 	Suffix.BackgroundTransparency = 1
 	Suffix.Size = UDim2.new(0,0,1,0)
-	Suffix.Font = Spinner.Font
+	Suffix.FontFace = Spinner.FontFace
 	Suffix.TextSize = Spinner.TextSize
 	Suffix.TextColor3 = Spinner.TextColor3
 	Suffix.Text = Spinner.Suffix
@@ -289,7 +289,7 @@ function NumberSpinner.new()
 	Decimal.LayoutOrder = 0
 	Decimal.BackgroundTransparency = 1
 	Decimal.Size = UDim2.new(0,0,1,0)
-	Decimal.Font = Spinner.Font
+	Decimal.FontFace = Spinner.FontFace
 	Decimal.TextSize = Spinner.TextSize
 	Decimal.TextColor3 = Spinner.TextColor3
 	Decimal.Text = "."
@@ -301,7 +301,7 @@ function NumberSpinner.new()
 	Negative.LayoutOrder = -999
 	Negative.BackgroundTransparency = 1
 	Negative.Size = UDim2.new(0,0,1,0)
-	Negative.Font = Spinner.Font
+	Negative.FontFace = Spinner.FontFace
 	Negative.TextSize = Spinner.TextSize
 	Negative.TextColor3 = Spinner.TextColor3
 	Negative.Text = "-"
@@ -341,7 +341,7 @@ function NumberSpinner.fromGuiObject(GuiObject)
 	Spinner.BackgroundTransparency = GuiObject.BackgroundTransparency
 
 	if GuiObject:IsA("TextLabel") or GuiObject:IsA("TextButton") or GuiObject:IsA("TextBox") then
-		Spinner.Font = GuiObject.Font
+		Spinner.FontFace = GuiObject.FontFace
 		Spinner.TextSize = GuiObject.TextSize
 		Spinner.TextColor3 = GuiObject.TextColor3
 		Spinner.TextTransparency = GuiObject.TextTransparency
