@@ -1,2 +1,3 @@
 # NumberSpinner
-Number that spins to update smoothly
+
+Smooth transitioning number counter

@@ -1,0 +1,15 @@
+{
+  "name": "@boatbomber/numberspinner",
+  "version": "0.1.0",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/boatbomber/NumberSpinner.git"
+  },
+  "contributors": [
+    "boatbomber"
+  ],
+  "bugs": {
+    "url": "https://github.com/boatbomber/NumberSpinner/issues"
+  }
+}
